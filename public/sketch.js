@@ -36,11 +36,19 @@ function setup() {
     socket.on('click',
         // When we receive data
         function(data) {
-            console.log("Got: " + data.x + " " + data.y);
-            if(data.x != null | data.y != null)
-                draw_shape(data);
+            if(typeof data === 'string'){
+                console.log(data);
+                change_label("data");
+            }
             else
-                clean_canvas();
+            {
+                document.getElementById('user_label').innerText = 'Welcome to shared drawing board';
+                console.log("Got: " + data.x + " " + data.y);
+                if(data.x != null | data.y != null)
+                    draw_shape(data);
+                else
+                    clean_canvas();
+            }
         }
     );
 }
@@ -148,4 +156,7 @@ function delete_my_shapes_pressed() {
     send_shape(delete_my_shapes);
 }
 
+function change_label(data) {
+    document.getElementById('user_label').innerText = 'No more shapes for today. therefore you only changing your board!';
+}
 

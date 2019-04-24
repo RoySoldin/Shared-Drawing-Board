@@ -107,6 +107,7 @@ io.sockets.on('connection',
                             // This is a way to send to everyone including sender
                             socket.broadcast.emit('click', data);
                         }
+                        else socket.emit('click',"No more shapes for today. therefore you only changing your board !");
                     });
                 }
             }

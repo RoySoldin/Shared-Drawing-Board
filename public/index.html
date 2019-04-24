@@ -64,9 +64,20 @@
       .btn-group2 button:hover {
         background-color: #3e8e41;
       }
+
+      .label label {
+        color: #3e8e41;
+        font-weight: bold;
+        display: block;
+        width: 450px;
+        float: center;
+        }
     </style>
   </head>
   <body>
+     <div class="label">
+      <label id="user_label">Welcome to shared drawing board</label>
+    </div>
     <div class="btn-group">
       <button id="circle" onclick="circle_pressed()">Circle</button>
       <button id="square" onclick="square_pressed()">Square</button>
