@@ -1,7 +1,8 @@
-
-
-var MAX_SHAPES_PER_DAY = 20;
+// Global var for inside logic (who gets the emit)
 var all_users = true;
+
+// How many shapes per user per day
+var MAX_SHAPES_PER_DAY = 50;
 
 
 // Using express: http://expressjs.com/
@@ -30,7 +31,7 @@ function update_canvas_sql3(socket, all_users) {
                 shape: row.shapeID,
                 color: row.color
             };
-            if(all_users)
+            if (all_users)
                 socket.broadcast.emit('click', data);
             else socket.emit('click', data);
         });
@@ -77,25 +78,23 @@ io.sockets.on('connection',
         // When this user emits, client side: socket.emit('otherevent',some data);
         socket.on('click',
             function(data) {
-
-                if(data.x === null && data.y === null){
+                // get x,y = null when user wants to delete his shapes
+                if (data.x === null && data.y === null) {
                     delete_user_shapes(address, () => {
                         socket.broadcast.emit('click', data);
                         socket.emit('click', data);
                         update_canvas_sql3(socket, all_users);
                         update_canvas_sql3(socket, !all_users);
                     });
-                }
-                else
-                {
-                    get_num_of_shapes(address, newdate, (num_of_shapes) => {                        
+                } else {
+                    get_num_of_shapes(address, newdate, (num_of_shapes) => {
                         // Data comes in as whatever was sent, including objects
                         console.log("Received: 'click' " + data.x + " " + data.y);
 
                         if (num_of_shapes + 1 < MAX_SHAPES_PER_DAY) {
                             let sql = `INSERT INTO canvas
-                                   VALUES(` + data.shape + `,` + data.x + `,` + 
-                                         data.y + `,` + '"' + address + '"' + ',' + '"' + newdate + '"' + `,` + data.color + `);`
+                                   VALUES(` + data.shape + `,` + data.x + `,` +
+                                data.y + `,` + '"' + address + '"' + ',' + '"' + newdate + '"' + `,` + data.color + `);`
                             db.run(sql, [], function(err) {
                                 if (err) {
                                     console.log(err.message);
@@ -106,8 +105,7 @@ io.sockets.on('connection',
                             // Send it to all other clients
                             // This is a way to send to everyone including sender
                             socket.broadcast.emit('click', data);
-                        }
-                        else socket.emit('click',"No more shapes for today. therefore you only changing your board !");
+                        } else socket.emit('click', "No more shapes for today. therefore you only changing your board !");
                     });
                 }
             }
@@ -117,7 +115,7 @@ io.sockets.on('connection',
         // update_canvas_sql3(socket);
         socket.on('disconnect', function() {
 
-            console.log("Client has disconnected");
+            console.log("Client " + address + " disconnected");
         });
     }
 );
@@ -137,7 +135,7 @@ function get_num_of_shapes(address, curr_date, callback) {
     db.get(sql,
         function(err, rows) {
             if (err) console.log(err.message);
-            else 
+            else
                 callback(rows['COUNT(*)']);
         });
 }
@@ -145,8 +143,8 @@ function get_num_of_shapes(address, curr_date, callback) {
 function delete_user_shapes(address, callback) {
     sql = `DELETE FROM canvas WHERE ip = "` + address + `"`;
     db.run(sql, [], (err) => {
-        if(err) console.log(err.message);
-        else 
+        if (err) console.log(err.message);
+        else
             callback();
     });
-} 
+}
