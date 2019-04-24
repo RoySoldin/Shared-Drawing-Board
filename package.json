@@ -1,15 +1,20 @@
 {
-  "name": "sockets_p5",
+  "name": "Shared-Drawing-Board",
   "version": "1.0.0",
-  "description": "This is an example for how to use sockets with p5.js.",
+  "description": "Shared drawing board",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "author": "Daniel Shiffman",
+  "author": "Roy Soldin",
   "license": "ISC",
   "dependencies": {
     "express": "^4.13.4",
-    "socket.io": "^1.4.5"
+    "mysql": "^2.17.0",
+    "socket.io": "^1.4.5",
+    "sqlite3": "^3.22.0"
+  },
+  "engines": {
+    "node": "8.10.0"
   }
 }

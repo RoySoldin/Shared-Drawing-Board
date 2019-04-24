@@ -1,66 +1,151 @@
-
 // Keep track of our socket connection
 var socket;
-var curr_shape_type = 1;
 
+//Size of canvas
+var canvas_x = 1000;
+var canvas_y = 500;
 
+//Types of shapes
+var square_shape = 1;
+var circle_shape = 2;
+
+//Color of shapes
+var white_fill = 1;
+var green_fill = 2;
+var yellow_fill = 3;
+var blue_fill = 4;
+var red_fill = 5;
+
+//Default values
+var curr_shape_type = square_shape;
+var curr_shape_color = white_fill;
+
+//Flag for "delete my shapes button"
+var delete_my_shapes = {
+    x: null,
+    y: null
+};
 
 function setup() {
-  createCanvas(400, 400);
-  background(0);
-  // Start a socket connection to the server
-  socket = io.connect('http://localhost:3000');
-
-  // Named event called 'click' and  an
-  // anonymous callback function
-  socket.on('click',
-    // When we receive data
-    function(data) {
-      console.log("Got: " + data.x + " " + data.y);
-      draw_shape(data);
-    }
-  );
+    createCanvas(canvas_x, canvas_y);
+    background(0);
+    // Start a socket connection to the server
+    socket = io.connect();
+    // Named event called 'click' and an
+    // anonymous callback function
+    socket.on('click',
+        // When we receive data
+        function(data) {
+            console.log("Got: " + data.x + " " + data.y);
+            if(data.x != null | data.y != null)
+                draw_shape(data);
+            else
+                clean_canvas();
+        }
+    );
 }
 
+function clean_canvas() {
+    clear();
+    createCanvas(canvas_x, canvas_y);
+    background(0);
+}
+
+
 function draw_shape(data) {
-  switch(data.shape) {
-    case 1:
-      rect(data.x, data.y,20, 20);
-      break;
-    case 2:
-      ellipse(data.x,data.y,20,20);
-      break;
-  }
+    let c;  // the color we are going to use
+    switch(data.color){
+        case green_fill:
+            c = color(124,252,0);
+            break;
+        case red_fill:
+            c = color(200,0,0);
+            break;
+        case yellow_fill:
+            c = color(255, 204, 0);
+            break;
+        case blue_fill:
+            c = color(0,0,255);
+            break;
+        default:
+            c = color(255,255,255);
+            break;
+    }
+
+    switch (data.shape) {
+        case square_shape:
+            fill(c);
+            rect(data.x, data.y, 20, 20);
+            break;
+        case circle_shape:
+            fill(c);
+            ellipse(data.x, data.y, 20, 20);
+            break;
+    }
 }
 
 function draw() {
-  // Nothing
+    // Nothing
 }
 
 function mouseClicked() {
-  let data = {
-    x: mouseX,
-    y: mouseY,
-    shape: curr_shape_type
-  };
+    if(mouseX < 0 || mouseX > canvas_x)
+        return;
+    if(mouseY < 0 || mouseY > canvas_y)
+        return;
+    let data = {
+        x: mouseX,
+        y: mouseY,
+        shape: curr_shape_type,
+        color: curr_shape_color
+    };
 
-  draw_shape(data);
-  // Send the mouse coordinates
-  send_shape(data.x, data.y);
+    draw_shape(data);
+    // Send the mouse coordinates
+    send_shape(data);
 }
+
 
 // Function for sending to the socket
-function send_shape(xpos, ypos) {
-  // We are sending!
-  console.log("sendmouse: " + xpos + " " + ypos);
-  
-  // Make a little object with  and y
-  var data = {
-    x: xpos,
-    y: ypos,
-    shape: curr_shape_type
-  };
+function send_shape(data) {
+    // We are sending!
+    if(data.x != null || data.y != null)
+        console.log("sendmouse: " + data.x + " " + data.y);
 
-  // Send that object to the socket
-  socket.emit('click',data);
+    // Send that object to the socket
+    socket.emit('click', data);
 }
+
+function circle_pressed() {
+    curr_shape_type = circle_shape;
+}
+
+function square_pressed() {
+    curr_shape_type = square_shape;
+}
+
+function white_pressed() {
+    curr_shape_color = white_fill;
+}
+
+function green_pressed() {
+    curr_shape_color = green_fill;
+}
+
+function yellow_pressed() {
+    curr_shape_color = yellow_fill;
+}
+
+function blue_pressed() {
+    curr_shape_color = blue_fill;
+}
+
+function red_pressed() {
+    curr_shape_color = red_fill;
+}
+
+function delete_my_shapes_pressed() {
+    send_shape(delete_my_shapes);
+}
+
+
