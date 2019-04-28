@@ -29,7 +29,8 @@ function update_canvas_sql3(socket, all_users) {
                 x: row.posx,
                 y: row.posy,
                 shape: row.shapeID,
-                color: row.color
+                color: row.color,
+                size: row.size
             };
             if (all_users)
                 socket.broadcast.emit('click', data);
@@ -78,7 +79,7 @@ io.sockets.on('connection',
         // When this user emits, client side: socket.emit('otherevent',some data);
         socket.on('click',
             function(data) {
-                // get x,y = null when user wants to delete his shapes
+                // Get x,y = null when user wants to delete his shapes
                 if (data.x === null && data.y === null) {
                     delete_user_shapes(address, () => {
                         socket.broadcast.emit('click', data);
@@ -94,7 +95,7 @@ io.sockets.on('connection',
                         if (num_of_shapes + 1 < MAX_SHAPES_PER_DAY) {
                             let sql = `INSERT INTO canvas
                                    VALUES(` + data.shape + `,` + data.x + `,` +
-                                data.y + `,` + '"' + address + '"' + ',' + '"' + newdate + '"' + `,` + data.color + `);`
+                                data.y + `,` + '"' + address + '"' + ',' + '"' + newdate + '"' + `,` + data.color + `,` + data.size + `);`
                             db.run(sql, [], function(err) {
                                 if (err) {
                                     console.log(err.message);

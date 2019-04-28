@@ -16,9 +16,15 @@ var yellow_fill = 3;
 var blue_fill = 4;
 var red_fill = 5;
 
+//Size of shape
+var small = 20;
+var medium = 40;
+var big = 80;
+
 //Default values
 var curr_shape_type = square_shape;
 var curr_shape_color = white_fill;
+var curr_shape_size = small;
 
 //Flag for "delete my shapes button"
 var delete_my_shapes = {
@@ -60,6 +66,21 @@ function clean_canvas() {
 // Draw shape on local board
 function draw_shape(data) {
     let c; // the color we are going to use
+    // let size;
+
+    // switch(data.size) {
+    //     case (small):
+    //         curr_shape_size = small;
+    //         break;
+    //     case (medium):
+    //         curr_shape_size = medium;
+    //         break;
+    //     case (big):
+    //         curr_shape_size = big;
+    //         break;
+    //     case (null) :
+    //         size = 20;
+    // }
     switch (data.color) {
         case green_fill:
             c = color(124, 252, 0);
@@ -81,11 +102,11 @@ function draw_shape(data) {
     switch (data.shape) {
         case square_shape:
             fill(c);
-            rect(data.x, data.y, 20, 20);
+            rect(data.x, data.y, data.size, data.size);
             break;
         case circle_shape:
             fill(c);
-            ellipse(data.x, data.y, 20, 20);
+            ellipse(data.x, data.y, data.size, data.size);
             break;
     }
 }
@@ -100,7 +121,8 @@ function mouseClicked() {
         x: mouseX,
         y: mouseY,
         shape: curr_shape_type,
-        color: curr_shape_color
+        color: curr_shape_color,
+        size: curr_shape_size
     };
 
     draw_shape(data);
@@ -147,6 +169,15 @@ function blue_pressed() {
 
 function red_pressed() {
     curr_shape_color = red_fill;
+}
+function small_pressed() {
+    curr_shape_size = small;
+}
+function medium_pressed() {
+    curr_shape_size = medium;
+}
+function big_pressed() {
+    curr_shape_size = big;
 }
 
 function delete_my_shapes_pressed() {
